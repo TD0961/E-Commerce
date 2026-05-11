@@ -19,8 +19,10 @@ firebase-debug.log*
 firestore-debug.log*
 pubsub-debug.log*
 ui-debug.log*
-functions/lib/
-functions/node_modules/
+**/functions/lib/
+**/functions/node_modules/
+**/functions/cp-node_modules.js
+
 
 # OS
 .DS_Store
