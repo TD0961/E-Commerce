@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #FF7A00;
+  --color-primary-light: #FF9433;
+  --color-primary-dark: #CC6200;
+  --color-secondary: #E6F0FF;
+  --color-secondary-light: #F0F6FF;
+  --color-secondary-dark: #B3D1FF;
+  --color-background: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-text-main: #1A1A1A;
+  --color-text-muted: #666666;
+  
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+@layer base {
+  :root {
+    --background: #FAFAFA;
+    --foreground: #1A1A1A;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      /* Maintaining light mode feel but dimming background slightly for "dark mode"
+         since this is a playful citrus theme. We'll stick to mostly light theme
+         for the requested "clean and modern" marketplace, but provide dark mode fallbacks */
+      --background: #121212;
+      --foreground: #F5F5F5;
+      --color-surface: #1E1E1E;
+      --color-secondary: #1A2638;
+      --color-text-main: #F5F5F5;
+      --color-text-muted: #A0A0A0;
+    }
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .shadow-soft {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+  }
+  .shadow-hover {
+    box-shadow: 0 14px 40px rgba(255, 122, 0, 0.08);
+  }
+}
