@@ -1,13 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu } from 'lucide-react';
-import { useAppSelector } from '@/lib/hooks';
+import { useRouter } from 'next/navigation';
+import { Search, ShoppingCart, User, Menu, LogOut } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '@/lib/hooks';
+import { logoutUser } from '@/features/authSlice';
 import Button from './Button';
 
 export default function Navbar() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const totalQuantity = useAppSelector((state) => state.cart.totalQuantity);
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    router.push('/');
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-[#1E1E1E]/80 backdrop-blur-md">
@@ -33,7 +42,7 @@ export default function Navbar() {
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl leading-5 bg-gray-50 dark:bg-gray-800 placeholder-gray-400 focus:outline-none focus:bg-white dark:focus:bg-[#1A1A1A] focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all sm:text-sm"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-2xl leading-5 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:bg-white dark:focus:bg-[#1A1A1A] focus:ring-2 focus:ring-[#FF7A00] focus:border-transparent transition-all sm:text-sm"
                 placeholder="Search for fresh deals..."
               />
             </div>
@@ -51,9 +60,27 @@ export default function Navbar() {
             </Link>
 
             {isAuthenticated ? (
-              <Link href="/admin" className="p-2 text-gray-600 dark:text-gray-300 hover:text-[#FF7A00] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                <User className="h-6 w-6" />
-              </Link>
+              <div className="flex items-center gap-1">
+                {user?.role === 'admin' && (
+                  <Link href="/admin" className="hidden lg:block text-xs font-semibold text-[#FF7A00] border border-[#FF7A00]/30 px-2 py-1 rounded-lg hover:bg-[#FF7A00]/10 transition-colors">
+                    Admin
+                  </Link>
+                )}
+                <Link
+                  href="/admin"
+                  className="p-2 text-gray-600 dark:text-gray-300 hover:text-[#FF7A00] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                  title={user?.name}
+                >
+                  <User className="h-6 w-6" />
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                  title="Sign out"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
             ) : (
               <div className="hidden sm:flex items-center gap-2">
                 <Link href="/login">
@@ -64,7 +91,7 @@ export default function Navbar() {
                 </Link>
               </div>
             )}
-            
+
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center ml-2">
               <button className="text-gray-600 hover:text-[#FF7A00] p-2">

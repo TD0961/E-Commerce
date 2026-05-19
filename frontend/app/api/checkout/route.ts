@@ -9,9 +9,11 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     
-    // In production, the URL to the Cloud Function should come from process.env
-    // Here we assume standard Firebase functions local emulator or prod URL.
-    const checkoutFunctionUrl = process.env.NEXT_PUBLIC_CHECKOUT_FUNCTION_URL || 'http://127.0.0.1:5001/your-project-id/us-central1/checkout';
+    const defaultUrl = process.env.NODE_ENV === 'production'
+      ? 'https://us-central1-citrusmarket-d8e41.cloudfunctions.net/checkout'
+      : 'http://127.0.0.1:5001/citrusmarket-d8e41/us-central1/checkout';
+
+    const checkoutFunctionUrl = process.env.NEXT_PUBLIC_CHECKOUT_FUNCTION_URL || defaultUrl;
 
     const response = await fetch(checkoutFunctionUrl, {
       method: 'POST',

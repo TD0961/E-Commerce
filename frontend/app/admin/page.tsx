@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
-import { logout } from '@/features/authSlice';
+import { logoutUser } from '@/features/authSlice';
 import { Users, Package, ShoppingCart, DollarSign, LogOut } from 'lucide-react';
 import { mockProducts } from '@/lib/mockData';
 import { formatPrice } from '@/lib/utils';
@@ -23,7 +23,7 @@ export default function AdminDashboardPage() {
   if (!isAuthenticated) return null;
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logoutUser());
     router.push('/');
   };
 

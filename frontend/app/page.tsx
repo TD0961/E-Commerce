@@ -3,11 +3,35 @@ import Link from "next/link";
 import { ArrowRight, ShoppingBag, Zap, ShieldCheck, Star } from "lucide-react";
 import Button from "@/components/Button";
 import ProductCard from "@/components/ProductCard";
+import { adminDb } from "@/lib/firebaseAdmin";
 import { mockProducts, mockCategories } from "@/lib/mockData";
 
-export default function Home() {
-  const featuredProducts = mockProducts.filter((p) => p.featured).slice(0, 4);
-  const trendingProducts = mockProducts.filter((p) => p.trending).slice(0, 4);
+export default async function Home() {
+  let products = mockProducts;
+  
+  try {
+    const snapshot = await adminDb.collection('products').get();
+    if (!snapshot.empty) {
+      products = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt && typeof data.createdAt.toDate === 'function'
+            ? data.createdAt.toDate().toISOString()
+            : (data.createdAt ? String(data.createdAt) : null),
+          updatedAt: data.updatedAt && typeof data.updatedAt.toDate === 'function'
+            ? data.updatedAt.toDate().toISOString()
+            : (data.updatedAt ? String(data.updatedAt) : null),
+        };
+      }) as any[];
+    }
+  } catch (error) {
+    console.warn("Failed to fetch products from Firestore, falling back to mock data:", error);
+  }
+
+  const featuredProducts = products.filter((p) => p.featured).slice(0, 4);
+  const trendingProducts = products.filter((p) => p.trending).slice(0, 4);
 
   return (
     <div className="flex flex-col gap-16 pb-16">

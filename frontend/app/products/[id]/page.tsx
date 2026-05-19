@@ -1,28 +1,64 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, ShoppingCart, Truck, Shield, ArrowLeft, Check } from 'lucide-react';
+import { Star, ShoppingCart, Truck, Shield, ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { useAppDispatch } from '@/lib/hooks';
 import { addToCart } from '@/features/cartSlice';
-import { mockProducts } from '@/lib/mockData';
+import { Product } from '@/lib/mockData';
 import { formatPrice } from '@/lib/utils';
 import Button from '@/components/Button';
-import { useState } from 'react';
 
-// Using React.use to unwrap params
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const dispatch = useAppDispatch();
-  const product = mockProducts.find(p => p.id === resolvedParams.id);
+  
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAdded, setIsAdded] = useState(false);
+
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        const res = await fetch(`/api/products/${resolvedParams.id}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success) {
+            setProduct(json.data);
+            setIsLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load product from API:', err);
+      }
+      setIsLoading(false);
+    }
+    loadProduct();
+  }, [resolvedParams.id]);
+
+  const handleAddToCart = () => {
+    if (product) {
+      dispatch(addToCart(product));
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2000);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-[#FF7A00] animate-spin" />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
         <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">The product you're looking for doesn't exist or has been removed.</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">The product you&apos;re looking for doesn&apos;t exist or has been removed.</p>
         <Link href="/products">
           <Button>Back to Products</Button>
         </Link>
@@ -30,11 +66,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     );
   }
 
-  const handleAddToCart = () => {
-    dispatch(addToCart(product));
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
-  };
+  // Fallbacks for rating and reviews if they aren't stored in Firestore
+  const rating = product.rating || 5.0;
+  const reviews = product.reviews || 0;
+  const inStock = product.inStock !== false; // default to true if not explicitly false
 
   return (
     <div className="max-w-6xl mx-auto pb-16">
@@ -62,7 +97,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             )}
           </div>
           <div className="grid grid-cols-4 gap-4">
-            {/* Mocking thumbnail images with the same image for now */}
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className={`relative aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 cursor-pointer border-2 ${i === 1 ? 'border-[#FF7A00]' : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'}`}>
                 <Image src={product.image} alt={`Thumbnail ${i}`} fill className="object-cover" />
@@ -86,11 +120,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           <div className="flex items-center gap-4 mb-6">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'fill-[#FFB800] text-[#FFB800]' : 'text-gray-300 dark:text-gray-600'}`} />
+                <Star key={i} className={`w-5 h-5 ${i < Math.floor(rating) ? 'fill-[#FFB800] text-[#FFB800]' : 'text-gray-300 dark:text-gray-600'}`} />
               ))}
             </div>
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {product.rating} ({product.reviews} reviews)
+              {rating} ({reviews} reviews)
             </span>
           </div>
 
@@ -103,7 +137,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <span className="text-4xl font-extrabold text-gray-900 dark:text-white">
                 {formatPrice(product.price)}
               </span>
-              {product.inStock ? (
+              {inStock ? (
                 <span className="inline-flex items-center gap-1 text-sm font-medium text-green-600 dark:text-green-400 mb-1">
                   <Check className="w-4 h-4" /> In Stock
                 </span>
@@ -117,7 +151,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <Button 
               size="lg" 
               className="w-full text-lg h-14"
-              disabled={!product.inStock}
+              disabled={!inStock}
               onClick={handleAddToCart}
             >
               {isAdded ? (
@@ -128,7 +162,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               ) : (
                 <>
                   <ShoppingCart className="w-5 h-5 mr-2" />
-                  {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                  {inStock ? 'Add to Cart' : 'Out of Stock'}
                 </>
               )}
             </Button>
@@ -161,19 +195,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       <div className="mt-20 pt-10 border-t border-gray-200 dark:border-gray-800">
         <h2 className="text-2xl font-bold mb-8">Customer Reviews</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Review Summary */}
           <div className="bg-gray-50 dark:bg-[#1E1E1E] p-6 rounded-2xl h-fit">
-            <div className="text-5xl font-extrabold text-gray-900 dark:text-white mb-2">{product.rating}</div>
+            <div className="text-5xl font-extrabold text-gray-900 dark:text-white mb-2">{rating}</div>
             <div className="flex items-center gap-1 mb-2">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'fill-[#FFB800] text-[#FFB800]' : 'text-gray-300'}`} />
+                <Star key={i} className={`w-5 h-5 ${i < Math.floor(rating) ? 'fill-[#FFB800] text-[#FFB800]' : 'text-gray-300'}`} />
               ))}
             </div>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Based on {product.reviews} reviews</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Based on {reviews} reviews</p>
             <Button variant="outline" className="w-full">Write a Review</Button>
           </div>
           
-          {/* Mock Review List */}
           <div className="md:col-span-2 space-y-6">
             {[1, 2, 3].map((review) => (
               <div key={review} className="pb-6 border-b border-gray-100 dark:border-gray-800 last:border-0">

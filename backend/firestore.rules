@@ -5,7 +5,9 @@ service cloud.firestore {
     
     // Function to check if user is admin
     function isAdmin() {
-      return request.auth != null && request.auth.token.role == 'admin';
+      return request.auth != null && 
+        (request.auth.token.role == 'admin' || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
     }
 
     // Function to check if user is the owner of the document
@@ -15,7 +17,14 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow write: if isAdmin();
+      
+      // Allow a user to create their own profile document with 'user' role on registration
+      allow create: if request.auth != null && 
+                    request.auth.uid == userId && 
+                    request.resource.data.role == 'user';
+                    
+      // Allow updates and deletes only by admin accounts
+      allow update, delete: if isAdmin();
     }
 
     match /products/{productId} {
@@ -25,8 +34,8 @@ service cloud.firestore {
     }
 
     match /orders/{orderId} {
-      allow read: if isOwner(resource.data.userId) || isAdmin();
-      // Orders are created securely via cloud function, so client creation is denied
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      // Orders are created securely via server-side Admin SDK, so client writes are denied
       allow write: if isAdmin();
     }
 

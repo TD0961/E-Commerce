@@ -8,10 +8,13 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { removeFromCart, updateQuantity, clearCart } from '@/features/cartSlice';
 import { formatPrice } from '@/lib/utils';
 import Button from '@/components/Button';
+import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { items, totalAmount } = useAppSelector(state => state.cart);
+  const { isAuthenticated } = useAppSelector(state => state.auth);
 
   const handleQuantityChange = (id: string, currentQty: number, change: number) => {
     const newQty = currentQty + change;
@@ -26,27 +29,11 @@ export default function CartPage() {
     dispatch(removeFromCart(id));
   };
 
-  const [isCheckingOut, setIsCheckingOut] = React.useState(false);
-  const [checkoutError, setCheckoutError] = React.useState<string | null>(null);
-
-  const handleCheckout = async () => {
-    setIsCheckingOut(true);
-    setCheckoutError(null);
-    try {
-      // Future Integration: 
-      // const token = await getFirebaseIdToken();
-      // const response = await fetch('/api/checkout', { ... });
-      
-      // Simulate network request to backend
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate success and clearing cart
-      dispatch(clearCart());
-      alert('Checkout successful! (Simulated for UI)');
-    } catch (error: any) {
-      setCheckoutError(error.message || 'Checkout failed');
-    } finally {
-      setIsCheckingOut(false);
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      router.push('/login?redirect=/checkout');
+    } else {
+      router.push('/checkout');
     }
   };
 
@@ -189,18 +176,13 @@ export default function CartPage() {
               )}
             </div>
 
-            {checkoutError && (
-              <p className="text-sm text-red-500 mb-4">{checkoutError}</p>
-            )}
-
             <Button 
               size="lg" 
               className="w-full text-lg group h-14"
               onClick={handleCheckout}
-              isLoading={isCheckingOut}
             >
-              {isCheckingOut ? 'Processing...' : 'Proceed to Checkout'}
-              {!isCheckingOut && <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />}
+              Proceed to Checkout
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             
             <div className="mt-4 text-center">
