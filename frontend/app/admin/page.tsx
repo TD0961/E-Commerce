@@ -41,8 +41,10 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/login');
+    } else if (user && user.role !== 'admin') {
+      router.push('/');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   // Load products from API
   const fetchProducts = async () => {
@@ -66,7 +68,7 @@ export default function AdminDashboardPage() {
     }
   }, [isAuthenticated]);
 
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated || user?.role !== 'admin') return null;
 
   const handleLogout = () => {
     dispatch(logoutUser());

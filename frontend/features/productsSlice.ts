@@ -25,10 +25,10 @@ export const fetchProducts = createAsyncThunk('products/fetchProducts', async ()
     const response = await fetch('/api/products');
     if (!response.ok) throw new Error('Network response was not ok');
     const data = await response.json();
-    if (data.success && data.data.length > 0) {
+    if (data.success) {
       return data.data as Product[];
     }
-    throw new Error('No products returned from API');
+    throw new Error('API reported failure');
   } catch (error) {
     console.warn('API fetch failed, falling back to mock data:', error);
     // Simulate network delay
