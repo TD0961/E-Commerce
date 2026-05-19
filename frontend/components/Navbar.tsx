@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Search, ShoppingCart, User, Menu, LogOut } from 'lucide-react';
@@ -12,6 +13,7 @@ export default function Navbar() {
   const dispatch = useAppDispatch();
   const totalQuantity = useAppSelector((state) => state.cart.totalQuantity);
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
@@ -58,28 +60,52 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-
             {isAuthenticated ? (
-              <div className="flex items-center gap-1">
-                {user?.role === 'admin' && (
-                  <Link href="/admin" className="hidden lg:block text-xs font-semibold text-[#FF7A00] border border-[#FF7A00]/30 px-2 py-1 rounded-lg hover:bg-[#FF7A00]/10 transition-colors">
-                    Admin
-                  </Link>
-                )}
-                <Link
-                  href="/admin"
-                  className="p-2 text-gray-600 dark:text-gray-300 hover:text-[#FF7A00] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                  title={user?.name}
+              <div className="relative">
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="p-2 text-gray-600 dark:text-gray-300 hover:text-[#FF7A00] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center focus:outline-none"
+                  title={user?.name || 'Account'}
                 >
                   <User className="h-6 w-6" />
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                  title="Sign out"
-                >
-                  <LogOut className="h-5 w-5" />
                 </button>
+
+                {showDropdown && (
+                  <div className="absolute right-0 mt-3 w-60 rounded-3xl bg-white dark:bg-[#1E1E1E] shadow-2xl border border-gray-100 dark:border-gray-800 p-4 animate-fade-in z-50">
+                    <div className="mb-3 pb-3 border-b border-gray-100 dark:border-gray-800">
+                      <p className="font-extrabold text-gray-900 dark:text-white truncate text-sm">{user?.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{user?.email}</p>
+                      <span className={`inline-block mt-2 px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase rounded-full ${
+                        user?.role === 'admin' 
+                          ? 'bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400' 
+                          : 'bg-[#FF7A00]/10 text-[#FF7A00]'
+                      }`}>
+                        {user?.role === 'admin' ? 'Administrator' : 'Customer'}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1">
+                      {user?.role === 'admin' && (
+                        <Link 
+                          href="/admin" 
+                          onClick={() => setShowDropdown(false)}
+                          className="flex items-center w-full px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                        >
+                          Control Center
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => {
+                          setShowDropdown(false);
+                          handleLogout();
+                        }}
+                        className="flex items-center w-full px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors text-left"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" /> Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="hidden sm:flex items-center gap-2">
