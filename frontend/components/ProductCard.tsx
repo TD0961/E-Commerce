@@ -31,7 +31,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link 
       href={`/products/${product.id}`}
-      className="group flex flex-col bg-white dark:bg-[#1E1E1E] rounded-2xl overflow-hidden shadow-soft hover:shadow-hover transition-all duration-300 border border-transparent hover:border-[#FF7A00]/20"
+      className="group flex flex-col bg-surface rounded-2xl overflow-hidden shadow-soft hover:shadow-hover transition-all duration-300 border border-transparent hover:border-[#FF7A00]/20"
     >
       {/* Image Container */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -63,19 +63,19 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span className="text-xs font-medium text-[#FF7A00] uppercase tracking-wider">
             {product.category}
           </span>
-          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-1 text-sm text-text-muted">
             <Star className="w-4 h-4 fill-[#FFB800] text-[#FFB800]" />
             <span className="font-medium">{product.rating}</span>
             <span className="text-xs">({product.reviews})</span>
           </div>
         </div>
 
-        <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2 mb-2 group-hover:text-[#FF7A00] transition-colors">
+        <h3 className="font-semibold text-lg text-text-main line-clamp-2 mb-2 group-hover:text-[#FF7A00] transition-colors">
           {product.name}
         </h3>
 
         <div className="mt-auto flex items-center justify-between pt-4">
-          <span className="text-xl font-bold text-gray-900 dark:text-white">
+          <span className="text-xl font-bold text-text-main">
             {formatPrice(product.price)}
           </span>
           

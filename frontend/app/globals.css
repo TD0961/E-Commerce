@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FF7A00;
-  --color-primary-light: #FF9433;
-  --color-primary-dark: #CC6200;
-  --color-secondary: #E6F0FF;
-  --color-secondary-light: #F0F6FF;
-  --color-secondary-dark: #B3D1FF;
-  --color-background: #FAFAFA;
-  --color-surface: #FFFFFF;
-  --color-text-main: #1A1A1A;
-  --color-text-muted: #666666;
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-secondary: var(--secondary);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-dark: var(--secondary-dark);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
   
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   
@@ -20,35 +20,53 @@
 
 @layer base {
   :root {
-    --background: #FAFAFA;
-    --foreground: #1A1A1A;
+    --primary: #FF7A00;
+    --primary-light: #FF9124;
+    --primary-dark: #E05A00;
+    
+    --secondary: #FFF4EB;
+    --secondary-light: #FFFBF7;
+    --secondary-dark: #FFD2B3;
+    
+    --background: #FDFDFD;
+    --surface: #FFFFFF;
+    --text-main: #1C1917;
+    --text-muted: #78716C;
+    
+    --foreground: #1C1917;
   }
 
   :root.dark {
-    /* Maintaining light mode feel but dimming background slightly for "dark mode"
-       since this is a playful citrus theme. We'll stick to mostly light theme
-       for the requested "clean and modern" marketplace, but provide dark mode fallbacks */
-    --background: #121212;
-    --foreground: #F5F5F5;
-    --color-surface: #1E1E1E;
-    --color-secondary: #1A2638;
-    --color-text-main: #F5F5F5;
-    --color-text-muted: #A0A0A0;
+    --primary: #FF851A;
+    --primary-light: #FF9D42;
+    --primary-dark: #CC6200;
+    
+    --secondary: #251B15;
+    --secondary-light: #2E221A;
+    --secondary-dark: #4A3528;
+    
+    --background: #0C0A09;
+    --surface: #1C1917;
+    --text-main: #F5F5F4;
+    --text-muted: #A8A29E;
+    
+    --foreground: #F5F5F4;
   }
 
   body {
     background-color: var(--background);
-    color: var(--foreground);
+    color: var(--text-main);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
 @layer utilities {
   .shadow-soft {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
   }
   .shadow-hover {
-    box-shadow: 0 14px 40px rgba(255, 122, 0, 0.08);
+    box-shadow: 0 14px 40px rgba(255, 122, 0, 0.05);
   }
 }
