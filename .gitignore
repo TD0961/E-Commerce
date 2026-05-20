@@ -11,7 +11,9 @@ pnpm-lock.yaml
 .next/
 out/
 build/
+.env
 .env*.local
+**/functions/.env
 
 # Firebase
 .firebase/

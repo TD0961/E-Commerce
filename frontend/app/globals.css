@@ -24,18 +24,16 @@
     --foreground: #1A1A1A;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      /* Maintaining light mode feel but dimming background slightly for "dark mode"
-         since this is a playful citrus theme. We'll stick to mostly light theme
-         for the requested "clean and modern" marketplace, but provide dark mode fallbacks */
-      --background: #121212;
-      --foreground: #F5F5F5;
-      --color-surface: #1E1E1E;
-      --color-secondary: #1A2638;
-      --color-text-main: #F5F5F5;
-      --color-text-muted: #A0A0A0;
-    }
+  :root.dark {
+    /* Maintaining light mode feel but dimming background slightly for "dark mode"
+       since this is a playful citrus theme. We'll stick to mostly light theme
+       for the requested "clean and modern" marketplace, but provide dark mode fallbacks */
+    --background: #121212;
+    --foreground: #F5F5F5;
+    --color-surface: #1E1E1E;
+    --color-secondary: #1A2638;
+    --color-text-main: #F5F5F5;
+    --color-text-muted: #A0A0A0;
   }
 
   body {

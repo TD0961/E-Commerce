@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, ShoppingCart, User, Menu, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, LogOut, Sun, Moon } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
 import { logoutUser } from '@/features/authSlice';
 import Button from './Button';
@@ -14,6 +14,23 @@ export default function Navbar() {
   const totalQuantity = useAppSelector((state) => state.cart.totalQuantity);
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setTheme(isDark ? 'dark' : 'light');
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    if (nextTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
@@ -52,6 +69,15 @@ export default function Navbar() {
 
           {/* Right Icons */}
           <div className="flex items-center gap-2 sm:gap-4">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-[#FF7A00] dark:hover:text-[#FF7A00] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none"
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            >
+              {theme === 'light' ? <Moon className="h-6 w-6" /> : <Sun className="h-6 w-6" />}
+            </button>
+
             <Link href="/cart" className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-[#FF7A00] dark:hover:text-[#FF7A00] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
               <ShoppingCart className="h-6 w-6" />
               {totalQuantity > 0 && (
