@@ -15,7 +15,7 @@ import Button from '@/components/Button';
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalAmount } = useAppSelector(state => state.cart);
-  const { isAuthenticated, user } = useAppSelector(state => state.auth);
+  const { isAuthenticated } = useAppSelector(state => state.auth);
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -97,22 +97,22 @@ export default function CheckoutPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center transition-all duration-300">
         <Loader2 className="w-16 h-16 text-[#FF7A00] animate-spin mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Preparing Secure Checkout</h2>
-        <p className="text-gray-500 dark:text-gray-400">Verifying your cart and reserving inventory...</p>
+        <h2 className="text-2xl font-extrabold text-text-main mb-2 tracking-tight">Preparing Secure Checkout</h2>
+        <p className="text-text-muted font-medium">Verifying your cart and reserving inventory...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 transition-all duration-300">
         <div className="w-16 h-16 bg-red-50 dark:bg-red-950/20 text-red-500 rounded-full flex items-center justify-center mb-4">
           <ShoppingBag className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Checkout Error</h2>
-        <p className="text-red-500 mb-6 max-w-md">{error}</p>
+        <h2 className="text-2xl font-extrabold text-text-main mb-2 tracking-tight">Checkout Error</h2>
+        <p className="text-red-500 mb-6 max-w-md font-semibold">{error}</p>
         <Link href="/cart">
           <Button variant="outline" className="gap-2">
             <ArrowLeft className="w-4 h-4" /> Return to Cart
@@ -127,24 +127,24 @@ export default function CheckoutPage() {
   const total = totalAmount + shipping + tax;
 
   return (
-    <div className="max-w-6xl mx-auto pb-16">
+    <div className="max-w-6xl mx-auto pb-16 transition-all duration-300">
       <div className="flex items-center gap-3 mb-8">
-        <Link href="/cart" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+        <Link href="/cart" className="p-2 hover:bg-secondary rounded-full text-text-muted hover:text-text-main transition-colors">
           <ArrowLeft className="w-6 h-6" />
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Secure Checkout</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-text-main">Secure Checkout</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
         {/* Left Side: Stripe Payment Element */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#1E1E1E] rounded-3xl p-6 md:p-8 shadow-soft border border-gray-100 dark:border-gray-800">
-          <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-200 dark:border-gray-800">
-            <div className="w-10 h-10 rounded-full bg-[#E6F0FF] dark:bg-[#1A2638] flex items-center justify-center text-[#FF7A00]">
+        <div className="lg:col-span-2 bg-surface rounded-3xl p-6 md:p-8 shadow-soft border border-secondary-dark/20">
+          <div className="flex items-center gap-3 mb-8 pb-4 border-b border-secondary-dark/20">
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-[#FF7A00]">
               <Lock className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">Payment Method</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">All transactions are secure and encrypted.</p>
+              <h2 className="text-xl font-extrabold text-text-main tracking-tight">Payment Method</h2>
+              <p className="text-xs text-text-muted font-medium">All transactions are secure and encrypted.</p>
             </div>
           </div>
 
@@ -157,21 +157,21 @@ export default function CheckoutPage() {
 
         {/* Right Side: Order Summary Review */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white dark:bg-[#1E1E1E] rounded-3xl p-6 md:p-8 shadow-soft border border-gray-100 dark:border-gray-800">
-            <h2 className="text-xl font-bold mb-6">Review Items</h2>
+          <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-soft border border-secondary-dark/20">
+            <h2 className="text-xl font-extrabold text-text-main mb-6 tracking-tight">Review Items</h2>
 
             {/* Cart Items List */}
-            <div className="divide-y divide-gray-100 dark:divide-gray-800 max-h-60 overflow-y-auto mb-6 pr-2">
+            <div className="divide-y divide-secondary-dark/20 max-h-60 overflow-y-auto mb-6 pr-2">
               {items.map(item => (
                 <div key={item.id} className="py-4 flex gap-4 first:pt-0 last:pb-0">
-                  <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-800 flex-shrink-0">
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
                     <img src={item.image} alt={item.name} className="object-cover w-full h-full" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-sm truncate">{item.name}</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Qty: {item.quantity}</p>
+                    <h4 className="font-bold text-sm truncate text-text-main">{item.name}</h4>
+                    <p className="text-xs text-text-muted font-medium mt-0.5">Qty: {item.quantity}</p>
                   </div>
-                  <span className="font-bold text-sm text-gray-900 dark:text-white">
+                  <span className="font-extrabold text-sm text-text-main">
                     {formatPrice(item.price * item.quantity)}
                   </span>
                 </div>
@@ -179,27 +179,27 @@ export default function CheckoutPage() {
             </div>
 
             {/* Order Price Details */}
-            <div className="space-y-4 mb-6 border-t border-gray-200 dark:border-gray-800 pt-4">
-              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+            <div className="space-y-4 mb-6 border-t border-secondary-dark/20 pt-4 font-medium text-sm">
+              <div className="flex justify-between text-text-muted">
                 <span>Subtotal</span>
-                <span className="font-medium text-gray-900 dark:text-white">{formatPrice(totalAmount)}</span>
+                <span className="font-bold text-text-main">{formatPrice(totalAmount)}</span>
               </div>
-              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex justify-between text-text-muted">
                 <span>Estimated Tax (8%)</span>
-                <span className="font-medium text-gray-900 dark:text-white">{formatPrice(tax)}</span>
+                <span className="font-bold text-text-main">{formatPrice(tax)}</span>
               </div>
-              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex justify-between text-text-muted">
                 <span>Shipping</span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {shipping === 0 ? <span className="text-green-500">Free</span> : formatPrice(shipping)}
+                <span className="font-bold text-text-main">
+                  {shipping === 0 ? <span className="text-green-500 font-extrabold">Free</span> : formatPrice(shipping)}
                 </span>
               </div>
             </div>
 
-            <div className="border-t border-gray-200 dark:border-gray-800 pt-4">
+            <div className="border-t border-secondary-dark/20 pt-4">
               <div className="flex justify-between items-center">
-                <span className="font-bold text-gray-900 dark:text-white">Total</span>
-                <span className="font-extrabold text-xl text-[#FF7A00]">
+                <span className="font-bold text-text-main">Total</span>
+                <span className="font-black text-xl text-[#FF7A00]">
                   {formatPrice(total)}
                 </span>
               </div>
